@@ -303,8 +303,18 @@ end
 hook.Add("PlayerUse", "FPP.Protect.PlayerUse", FPP.Protect.PlayerUse)
 
 --EntityDamage
-function FPP.Protect.EntityDamage(ent, dmginfo)
+local skip = {
+    ["cr_spawnpoint"] = true,
+    ["gmod_sent_vehicle_fphysics_base"] = true,
+    ["gmod_sent_vehicle_fphysics_wheel"] = true,
+    ["gmod_wire_damage_detector"] = true,
+    ["func_breakable"] = true,
+}
+function FPP.Protect.EntityDamage(ent, dmginfo) 
     if not IsValid(ent) then return end
+    
+    if ent.LVS then return end
+    if skip[ent:GetClass()] then return end
 
     local inflictor = dmginfo:GetInflictor()
     local attacker = dmginfo:GetAttacker()
@@ -356,7 +366,6 @@ function FPP.Protect.EntityDamage(ent, dmginfo)
     if not cantouch then dmginfo:SetDamage(0) end
 end
 hook.Add("EntityTakeDamage", "FPP.Protect.EntityTakeDamage", FPP.Protect.EntityDamage)
-
 --Toolgun
 --for advanced duplicator, you can't use the IsWeapon function
 local allweapons = {
