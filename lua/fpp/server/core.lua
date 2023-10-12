@@ -312,9 +312,8 @@ local skip = {
 }
 function FPP.Protect.EntityDamage(ent, dmginfo) 
     if not IsValid(ent) then return end
-    
-    if ent.LVS then return end
-    if skip[ent:GetClass()] then return end
+
+    if skip[ent:GetClass()] or ent.LVS or ent:IsNPC() then return end
 
     local inflictor = dmginfo:GetInflictor()
     local attacker = dmginfo:GetAttacker()
