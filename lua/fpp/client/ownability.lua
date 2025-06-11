@@ -26,10 +26,14 @@ local reasons = {
 
 local function receiveTouchData(len)
     repeat
-        local entIndex = net.ReadUInt(32)
-        local ownerIndex = net.ReadUInt(32)
+        local entIndex = net.ReadUInt(13)
+        local ownerIndex = net.ReadUInt(8)
         local touchability = net.ReadUInt(5)
         local reason = net.ReadUInt(20)
+
+        if ownerIndex == 255 then
+            ownerIndex = -1
+        end
 
         FPP.entOwners[entIndex] = ownerIndex
         FPP.entTouchability[entIndex] = touchability
