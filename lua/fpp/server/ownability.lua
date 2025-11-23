@@ -286,13 +286,21 @@ end
 Networking
 ---------------------------------------------------------------------------]]
 util.AddNetworkString("FPP_TouchabilityData")
--- Sends 13 + 8 + 5 + 20 = 46 bits of ownership data per entity
+
+-- MAX_PLAYER_BITS is the minimum amount of bits needed to refer to a player.
+-- Given that there's a hard maximum of 128 players on a server. MAX_PLAYER_BITS
+-- will hold a value between 1 and 8 inclusive.
+local MAX_PLAYER_BITS = math.ceil(math.log(1 + game.MaxPlayers()) / math.log(2))
+--
+-- Sends MAX_EDICT_BITS(13) + MAX_PLAYER_BITS(between 1 and 8) + 5 + 20 = between 39 and 46 bits of
+-- ownership data per entity
+
 local function netWriteEntData(ply, ent)
     -- EntIndex for when it's out of the PVS of the player
-    net.WriteUInt(ent:EntIndex(), 13)
+    net.WriteUInt(ent:EntIndex(), MAX_EDICT_BITS)
 
     local owner = ent:CPPIGetOwner()
-    net.WriteUInt(IsValid(owner) and owner:EntIndex() or 255, 8)
+    net.WriteUInt(IsValid(owner) and owner:EntIndex() or 0, MAX_PLAYER_BITS)
 
     local entTable = ent:GetTable()
     net.WriteUInt(entTable.FPPRestrictConstraint and entTable.FPPRestrictConstraint[ply] or entTable.FPPCanTouch[ply], 5) -- touchability information
